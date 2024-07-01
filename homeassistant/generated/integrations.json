@@ -6827,6 +6827,12 @@
       "config_flow": false,
       "iot_class": "cloud_push"
     },
+    "wiser_by_feller": {
+      "name": "Wiser by Feller",
+      "integration_type": "hub",
+      "config_flow": true,
+      "iot_class": "local_push"
+    },
     "withings": {
       "name": "Withings",
       "integration_type": "hub",

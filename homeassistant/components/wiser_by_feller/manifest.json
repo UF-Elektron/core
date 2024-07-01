@@ -1,0 +1,13 @@
+{
+  "domain": "wiser_by_feller",
+  "name": "Wiser by Feller",
+  "codeowners": ["@UF-Elektron"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://www.home-assistant.io/integrations/wiser_by_feller",
+  "homekit": {},
+  "iot_class": "local_push",
+  "requirements": [],
+  "ssdp": [],
+  "zeroconf": []
+}
