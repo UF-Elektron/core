@@ -6,30 +6,32 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-# TO_DO List the platforms that you want to support.
+# TODO List the platforms that you want to support.
 # For your initial PR, limit it to 1 platform.
 PLATFORMS: list[Platform] = [Platform.LIGHT]
 
-# TO_DO Create ConfigEntry type alias with API object
-# TO_DO Rename type alias and update all entry annotations
+# TODO Create ConfigEntry type alias with API object
+# TODO Rename type alias and update all entry annotations
 # type New_NameConfigEntry = ConfigEntry[MyApi]  # noqa: F821
 
 
-# TO_DO Update entry annotation
+# TODO Update entry annotation
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Wiser by Feller from a config entry."""
 
-    # TO_DO 1. Create API instance
-    # TO_DO 2. Validate the API connection (and authentication)
-    # TO_DO 3. Store an API object for your platforms to access
+    # TODO 1. Create API instance
+    # TODO 2. Validate the API connection (and authentication)
+    # TODO 3. Store an API object for your platforms to access
     # entry.runtime_data = MyAPI(...)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    hass.states.async_set("wiser_by_feller.Hello_World", "Works :-) !")
+
     return True
 
 
-# TO_DO Update entry annotation
+# TODO Update entry annotation
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)

@@ -16,7 +16,7 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-# TO_DO adjust the data schema to the data that you need
+# TODO adjust the data schema to the data that you need
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_HOST): str,
@@ -29,7 +29,7 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 class PlaceholderHub:
     """Placeholder class to make tests pass.
 
-    TO_DO Remove this placeholder class and replace with things from your PyPI package.
+    TODO Remove this placeholder class and replace with things from your PyPI package.
     """
 
     def __init__(self, host: str) -> None:
@@ -46,7 +46,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     Data has the keys from STEP_USER_DATA_SCHEMA with values provided by the user.
     """
-    # TO_DO validate the data can be used to set up a connection.
+    # TODO validate the data can be used to set up a connection.
 
     # If your PyPI package is not built with async, pass your methods
     # to the executor:
@@ -65,7 +65,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     # InvalidAuth
 
     # Return info that you want to store in the config entry.
-    return {"title": "Name of the device"}
+    return {"title": "μGW V2"}
 
 
 class WbfConfigFlow(ConfigFlow, domain=DOMAIN):
