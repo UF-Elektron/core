@@ -4,7 +4,7 @@ import math
 from .pypi.lights import Light
 
 from homeassistant.core import callback
-from homeassistant.components.light import ATTR_BRIGHTNESS, LightEntity
+from homeassistant.components.light import ATTR_BRIGHTNESS, LightEntity, ColorMode
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -64,12 +64,12 @@ async def async_setup_entry(
     # device: ExampleDevice = hass.data[DOMAIN][entry.entry_id]
     # async_add_entities(LisaLight(Light(10, {"name": "light 1"}, api_object.req_data)))
     # hack with [], the class Lights in PyPI not used
-    async_add_entities([LisaLight(Light(10, {"name": "light 1"}, api_object.req_data))])
-
-
-# def setup_entry():
-#     MYLIGHT = Light(10, {"name": "light 1"}, None)
-
+    async_add_entities(
+        [
+            LisaLight(Light(10, {"name": "this is a gebastel"}, api_object.req_data)),
+            LisaLight(Light(8, {"name": "anders liecht"}, api_object.req_data)),
+        ]
+    )
 
 # add coordinator later
 # class LisaLight(CoordinatorEntity, LightEntity):
@@ -85,6 +85,7 @@ class LisaLight(LightEntity):
         self.light = light
         # self.api_object = ApiWithIni()
         # self.light = Light(10, {"name": "light 1"}, self.api_object.req_data)
+        self._attr_supported_color_modes = {ColorMode.ONOFF}
 
     @property
     def available(self):
@@ -101,6 +102,20 @@ class LisaLight(LightEntity):
     def brightness(self):
         """Return the current brightness."""
         return value_to_brightness(BRIGHTNESS_SCALE, self._device.brightness)
+
+    @property
+    def color_mode(self) -> str:
+        """Return the color mode of the light."""
+        return ColorMode.ONOFF
+
+    @property
+    def hs_color(self):
+        """Return the hs color value."""
+        return None
+
+    @property
+    def color_temp(self):
+        return None
 
     @property
     def is_on(self):

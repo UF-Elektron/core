@@ -41,10 +41,9 @@ class Lights:
 class Light:
     """Represents a WbF light."""
 
-    ITEM_TYPE = "lights"
-
     def __init__(self, id: str, raw, request: Coroutine) -> None:
         """Initialize instance."""
+        print(f"init 'Light' with '{id=}', '{raw=}'")
         self.id = id
         self.raw = raw
         self._request = request

@@ -38,6 +38,7 @@ class PlaceholderHub:
 
     async def authenticate(self, username: str, password: str) -> bool:
         """Test if we can authenticate with the host."""
+        print(f"try to authenticate with {username=} {password=} on {self.host=}")
         return True
 
 
