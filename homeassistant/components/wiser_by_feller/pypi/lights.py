@@ -3,6 +3,41 @@
 from collections.abc import Coroutine
 
 
+# not used jet... in components/wiser_by_feller/light.py the LisaLight needs to be iterable...
+class Lights:
+    """Represents Lights"""
+
+    def __init__(self, raw, request: Coroutine) -> None:
+        """Initialize instance."""
+        self._request = request
+        self._item_cls = Light
+        self._items = {}
+        for id_1, raw_item in raw.items():
+            obj = self._items.get(id_1)
+
+            if obj is not None:
+                obj.raw = raw_item
+            else:
+                self._items[id_1] = self._item_cls(
+                    id_1,
+                    raw_item,
+                    self._request,
+                )
+
+    @property
+    def items(self):
+        return self.values()
+
+    def values(self):
+        return list(self._items.values())
+
+    def __getitem__(self, obj_id):
+        return self._items[obj_id]
+
+    def __iter__(self):
+        return iter(self._items)
+
+
 class Light:
     """Represents a WbF light."""
 
