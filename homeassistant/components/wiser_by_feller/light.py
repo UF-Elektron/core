@@ -57,19 +57,21 @@ async def async_setup_entry(
     """Set up light entities."""
 
     """fixed ugw bastel"""
-    api_object = ApiWithIni()
+    # api_object = ApiWithIni()
 
-    """Set up Example sensor based on a config entry."""
-    # from https://developers.home-assistant.io/docs/core/entity
+    # """Set up Example sensor based on a config entry."""
+    # # from https://developers.home-assistant.io/docs/core/entity
+    # # device: ExampleDevice = hass.data[DOMAIN][entry.entry_id]
     # device: ExampleDevice = hass.data[DOMAIN][entry.entry_id]
-    # async_add_entities(LisaLight(Light(10, {"name": "light 1"}, api_object.req_data)))
-    # hack with [], the class Lights in PyPI not used
-    async_add_entities(
-        [
-            LisaLight(Light(10, {"name": "this is a gebastel"}, api_object.req_data)),
-            LisaLight(Light(8, {"name": "anders liecht"}, api_object.req_data)),
-        ]
-    )
+    # # async_add_entities(LisaLight(Light(10, {"name": "light 1"}, api_object.req_data)))
+    # # hack with [], the class Lights in PyPI not used
+    # async_add_entities(
+    #     [
+    #         LisaLight(Light(10, {"name": "this is a gebastel"}, api_object.req_data)),
+    #         LisaLight(Light(8, {"name": "anders liecht"}, api_object.req_data)),
+    #     ]
+    # )
+
 
 # add coordinator later
 # class LisaLight(CoordinatorEntity, LightEntity):

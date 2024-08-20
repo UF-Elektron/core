@@ -6,6 +6,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
+from .ugw import LisaGateway
+
 # TODO List the platforms that you want to support.
 # For your initial PR, limit it to 1 platform.
 PLATFORMS: list[Platform] = [Platform.LIGHT]
@@ -24,7 +26,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # TODO 3. Store an API object for your platforms to access
     # entry.runtime_data = MyAPI(...)
 
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    # DME: will be done in ugw.py: async_initialize_bridge
+    # await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    # TODO: rename
+    bridge = LisaGateway(hass, entry)
+    if not await bridge.async_initialize_bridge():
+        return False
 
     # hass.states.async_set("wiser_by_feller.Hello_World", "Works :-) !")
 
