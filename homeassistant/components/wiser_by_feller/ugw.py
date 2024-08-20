@@ -1,8 +1,9 @@
 from homeassistant import core
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_API_KEY, CONF_API_VERSION, CONF_HOST, Platform
+from homeassistant.const import CONF_API_VERSION, CONF_HOST, Platform
 
 from .const import DOMAIN
+from .device import async_setup_devices
 from .pypi.ugw import ApiWithIni
 
 # TODO: soll ich PLATFORMS hier wie bei hue machen, oder wie von HA vorgeschlagen in __init__.py?
@@ -21,7 +22,7 @@ class LisaGateway:
         # TODO: __init__.py of PyPI project where HueBridgeV2 is object to control uGW
         # self.api = HueBridgeV2(self.host, app_key)
         # something like this...
-        api_object = ApiWithIni()
+        self.api = ApiWithIni()
         hass.data.setdefault(DOMAIN, {})[self.config_entry.entry_id] = self
 
     @property
@@ -42,7 +43,7 @@ class LisaGateway:
         # return False if uGW initialization failed
         # before return False throw an exception like this: self.logger.exception("Unknown error connecting to Hue bridge")
         # TODO: setup devices
-        # await async_setup_devices(self)
+        await async_setup_devices(self)
 
         # forward my config entry to home assistant
         await self.hass.config_entries.async_forward_entry_setups(

@@ -53,6 +53,24 @@ class ApiWithIni:
         if not self.request_session and self.use_request_session:
             self.request_session = requests.Session()
 
+        # **start** copy of hue PyPI stuff
+        # ------------------------------------------------------------
+        self._devices = None
+        # TODO: implement DevicesController:
+        # self._devices = DevicesController(self)
+
+    # ...copy of hue PyPI stuff
+    # ------------------------------------------------------------
+
+    # TODO: add return type  -> DevicesController:
+    @property
+    def devices(self):
+        """Get the Devices Controller for managing all device resources."""
+        return self._devices
+
+    # **end** copy of hue PyPI stuff
+    # ------------------------------------------------------------
+
     def req(self, method, subpath, **kwargs):
         # Read options
         lisagateway_host = self.argv.get("host", "127.0.0.1")
