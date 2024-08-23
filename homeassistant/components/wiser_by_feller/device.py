@@ -47,7 +47,7 @@ class DeviceProductData:
 class DeviceMetaData:
     """Represent MetaData for a device object as used by the Hue api."""
 
-    archetype: DeviceArchetypes
+    # archetype: DeviceArchetypes
     name: str
 
 
@@ -66,7 +66,28 @@ async def async_setup_devices(bridge):
     hass = bridge.hass
     api: ApiWithIni = bridge.api  # to satisfy typing
     dev_reg = dr.async_get(hass)
-    dev_controller = api.devices
+    # use test value
+    # dev_controller = api.devices
+    tmp = DeviceProductData("1", "2", "3", "4")
+    tmp_meta = DeviceMetaData("jajajaaaa")
+    a_device = Device("42", tmp, tmp_meta)
+    a_device.product_data.product_name = "test_name"
+    a_device.product_data.model_id = "69"
+    a_device.product_data.software_version = "1234"
+    a_device.product_data.manufacturer_name = "chinesli"
+    a_device.metadata.name = "noname"
+    dev_controller = [a_device]
+    # dev_controller = [
+    #     {
+    #         "product_data": {
+    #             "product_name": "test_name",
+    #             "model_id": "69",
+    #             "software_version": "1234",
+    #             "manufacturer_name": "chinesli",
+    #         },
+    #         "metadata": {"name": "noname"},
+    #     }
+    # ]
 
     # TODO: add type for "hue_resource", it used to be Device | Room | Zone
     @callback

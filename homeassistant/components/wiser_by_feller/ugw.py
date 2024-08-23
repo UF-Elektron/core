@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from homeassistant import core
 from homeassistant.config_entries import ConfigEntry
@@ -19,6 +20,7 @@ class LisaGateway:
 
     def __init__(self, hass: core.HomeAssistant, config_entry: ConfigEntry) -> None:
         """Initialize the system."""
+        self.logger = logging.getLogger(__name__)
         self.config_entry = config_entry
         self.hass = hass
         # TODO: __init__.py of PyPI project where HueBridgeV2 is object to control uGW
@@ -44,10 +46,13 @@ class LisaGateway:
         # ... api.init()
         setup_ok = False
         try:
-            async with asyncio.timeout(10):
-                await self.api.initialize()
+            # async with asyncio.timeout(10):
+            #     await something something .init()
             setup_ok = True
+            self.logger.info("class_init ok")
         except:
+            print("async_initialize_bridge EXCPETION!")
+            self.logger.exception("async_initialize_bridge class_init excpetion")
             return False
         # return False if uGW initialization failed
         # before return False throw an exception like this: self.logger.exception("Unknown error connecting to Hue bridge")
