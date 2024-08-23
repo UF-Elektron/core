@@ -1,5 +1,8 @@
 """Handles lisa devices / loads and mapping to Home Assistant devices."""
 
+from dataclasses import dataclass
+from enum import Enum
+
 # code from hue/v2/device.py
 # maybe better name load / loads? name device.py
 from homeassistant.const import (
@@ -15,10 +18,49 @@ from homeassistant.helpers import device_registry as dr
 
 from .const import DOMAIN
 from .pypi.ugw import ApiWithIni
-from .ugw import LisaGateway
+
+# it's anyway only used "if TYPE_CHECKING" in hue project
+# devices.py gets importet by ugw.py and ugw.py by __init__.py. Both ugw.py and devices.py import LisaGateway: circular import!
+# from .ugw import LisaGateway
+# does not work with this either
+# from . import ugw
 
 
-async def async_setup_devices(bridge: LisaGateway):
+class DeviceArchetypes(Enum):
+    """Enum with all possible Device archetypes."""
+
+    BRIDGE_V2 = "bridge_v2"
+    UNKNOWN_ARCHETYPE = "unknown_archetype"
+
+
+@dataclass
+class DeviceProductData:
+    """Represent a DeviceProductData object as used by the Hue api."""
+
+    model_id: str
+    software_version: str
+    manufacturer_name: str
+    product_name: str
+
+
+@dataclass
+class DeviceMetaData:
+    """Represent MetaData for a device object as used by the Hue api."""
+
+    archetype: DeviceArchetypes
+    name: str
+
+
+@dataclass
+class Device:
+    """Blaaaablabla."""
+
+    id: str
+    product_data: DeviceProductData
+    metadata: DeviceMetaData
+
+
+async def async_setup_devices(bridge):
     """Manage setup of devices from Hue devices."""
     entry = bridge.config_entry
     hass = bridge.hass
@@ -28,7 +70,7 @@ async def async_setup_devices(bridge: LisaGateway):
 
     # TODO: add type for "hue_resource", it used to be Device | Room | Zone
     @callback
-    def add_device(hue_resource) -> dr.DeviceEntry:
+    def add_device(hue_resource: Device) -> dr.DeviceEntry:
         """Register a Hue device in device registry."""
         # Register a Hue device resource as device in HA device registry.
         model = f"{hue_resource.product_data.product_name} ({hue_resource.product_data.model_id})"
@@ -45,7 +87,7 @@ async def async_setup_devices(bridge: LisaGateway):
         #     params[ATTR_IDENTIFIERS].add((DOMAIN, api.config.bridge_id))
         # else:
         #     params[ATTR_VIA_DEVICE] = (DOMAIN, api.config.bridge_device.id)
-        params[ATTR_IDENTIFIERS].add((DOMAIN, api.config.bridge_id))
+        params[ATTR_IDENTIFIERS].add((DOMAIN, api.bridge_id))
         return dev_reg.async_get_or_create(config_entry_id=entry.entry_id, **params)
 
     known_devices = [add_device(hue_device) for hue_device in dev_controller]

@@ -7,9 +7,15 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.components import zeroconf
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
 from homeassistant.const import CONF_HOST, CONF_PASSWORD, CONF_USERNAME
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 
 from .const import DOMAIN
@@ -74,10 +80,22 @@ class WbfConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry):
+        """Get the options flow for this handler."""
+
+        return HueV2OptionsFlowHandler(config_entry)
+
+    def __init__(self) -> None:
+        """Initialize the Hue flow."""
+        print("WbfConfigFlow __init__: nothing to do here")
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Handle the initial step."""
+        print(f"async_step_user: {user_input=}")
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
@@ -96,6 +114,22 @@ class WbfConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
+    async def async_step_zeroconf(
+        self, discovery_info: zeroconf.ZeroconfServiceInfo
+    ) -> ConfigFlowResult:
+        """Empty: abort."""
+        return self.async_abort(reason="cannot_connect")
+
+    async def async_step_homekit(
+        self, discovery_info: zeroconf.ZeroconfServiceInfo
+    ) -> ConfigFlowResult:
+        """Empty: abort."""
+        return self.async_abort(reason="cannot_connect")
+
+    async def async_step_import(self, import_info: dict[str, Any]) -> ConfigFlowResult:
+        """Empty: abort."""
+        return self.async_abort(reason="cannot_connect")
+
 
 class CannotConnect(HomeAssistantError):
     """Error to indicate we cannot connect."""
@@ -103,3 +137,21 @@ class CannotConnect(HomeAssistantError):
 
 class InvalidAuth(HomeAssistantError):
     """Error to indicate there is invalid auth."""
+
+
+class HueV2OptionsFlowHandler(OptionsFlow):
+    """Handle Hue options for V2 implementation."""
+
+    def __init__(self, config_entry: ConfigEntry) -> None:
+        """Initialize Hue options flow."""
+        print("HueV2OptionsFlowHandler...")
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage Hue options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+        # TODO: other handling needed?
+        return self.async_create_entry(title="", data=user_input)

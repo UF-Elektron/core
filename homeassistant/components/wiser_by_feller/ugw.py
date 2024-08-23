@@ -1,3 +1,5 @@
+import asyncio
+
 from homeassistant import core
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_API_VERSION, CONF_HOST, Platform
@@ -40,6 +42,13 @@ class LisaGateway:
         """Initialize Connection with the Hue API."""
         # TODO: initialisierungs code
         # ... api.init()
+        setup_ok = False
+        try:
+            async with asyncio.timeout(10):
+                await self.api.initialize()
+            setup_ok = True
+        except:
+            return False
         # return False if uGW initialization failed
         # before return False throw an exception like this: self.logger.exception("Unknown error connecting to Hue bridge")
         # TODO: setup devices
