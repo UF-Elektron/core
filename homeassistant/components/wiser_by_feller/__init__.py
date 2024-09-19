@@ -5,7 +5,9 @@ from __future__ import annotations
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 
+from .const import DOMAIN
 from .ugw import LisaGateway
 
 # TODO List the platforms that you want to support.
@@ -15,6 +17,21 @@ PLATFORMS: list[Platform] = [Platform.LIGHT]
 # TODO Create ConfigEntry type alias with API object
 # TODO Rename type alias and update all entry annotations
 # type New_NameConfigEntry = ConfigEntry[MyApi]  # noqa: F821
+
+
+# Place holder stuff for missing Pypi
+class Stub:
+    mac_address = "02:08:43:20:26:a0"
+    bridge_id = "uGW ID"
+    # bridge_device.id = 0
+    # bridge_device.product_data.manufacturer_name = 0
+    name = "name of uGW"
+    model_id = "model ID"
+    software_version = "6.0.16"
+
+
+class Pypi_placeholder:
+    config = Stub
 
 
 # TODO Update entry annotation
@@ -30,10 +47,26 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     # TODO: rename
     bridge = LisaGateway(hass, entry)
+    # TODO: replace place holder
+    # api = bridge.api
+    api = Pypi_placeholder
     if not await bridge.async_initialize_bridge():
         return False
 
-    # hass.states.async_set("wiser_by_feller.Hello_World", "Works :-) !")
+    # add bridge device to device registry
+    device_registry = dr.async_get(hass)
+    device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        connections={(dr.CONNECTION_NETWORK_MAC, api.config.mac_address)},
+        identifiers={
+            (DOMAIN, api.config.bridge_id),
+            (DOMAIN, "api.config.bridge_device.id"),
+        },
+        manufacturer="api.config.bridge_device.product_data.manufacturer_name",
+        name=api.config.name,
+        model=api.config.model_id,
+        sw_version=api.config.software_version,
+    )
 
     return True
 
