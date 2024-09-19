@@ -1,31 +1,18 @@
-import math
-
 # PyPI imports
-from .pypi.lights import Light
 
-from homeassistant.core import callback
-from homeassistant.components.light import ATTR_BRIGHTNESS, LightEntity, ColorMode
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.components.light import ATTR_BRIGHTNESS, ColorMode, LightEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.util.color import value_to_brightness
-from homeassistant.util.percentage import percentage_to_ranged_value
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
+# testing: to create LisaLight in async_add_entities (TODO: remove)
+from .pypi.lights import Light
 from .pypi.ugw import ApiWithIni
 from .const import DOMAIN
 
 BRIGHTNESS_SCALE = (1, 10000)
 MYLIGHT = None
-
-
-# cmd line testing
-###################
-# import asyncio
-# import homeassistant.components.wiser_by_feller.light as light
-# a_light = light.LisaLight(None)
-# a_light.async_turn_on()
 
 
 @callback
@@ -56,21 +43,28 @@ async def async_setup_entry(
 ) -> None:
     """Set up light entities."""
 
+    bridge = hass.data[DOMAIN][entry.entry_id]
+    # TODO: not every load entry in .devices is a light but for now I don't care
+    devices = bridge.api.devices
+
     """fixed ugw bastel"""
-    # api_object = ApiWithIni()
+    api_object = ApiWithIni()
 
     # """Set up Example sensor based on a config entry."""
     # # from https://developers.home-assistant.io/docs/core/entity
     # # device: ExampleDevice = hass.data[DOMAIN][entry.entry_id]
     # device: ExampleDevice = hass.data[DOMAIN][entry.entry_id]
-    # # async_add_entities(LisaLight(Light(10, {"name": "light 1"}, api_object.req_data)))
-    # # hack with [], the class Lights in PyPI not used
-    # async_add_entities(
-    #     [
-    #         LisaLight(Light(10, {"name": "this is a gebastel"}, api_object.req_data)),
-    #         LisaLight(Light(8, {"name": "anders liecht"}, api_object.req_data)),
-    #     ]
-    # )
+    async_add_entities(
+        LisaLight(
+            Light(
+                lisa_light.get("id"),
+                {"name": lisa_light.get("name")},
+                api_object.req_data,
+            )
+        )
+        for lisa_light in devices
+    )
+    # async_add_entities(make_light_entity(light) for light in controller)
 
 
 # add coordinator later
@@ -94,6 +88,9 @@ class LisaLight(LightEntity):
         """Return if light is available."""
         print("'available' not implemented")
         return True
+
+    # Properties should always only return information from memory and not do I/O (like network requests).
+    # Implement update() or async_update() to fetch data.
 
     @property
     def name(self):
@@ -120,7 +117,7 @@ class LisaLight(LightEntity):
         return None
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
         """Return true if device is on."""
         # TODO: add when scenes / groups are implemented
         # if self.is_group:

@@ -66,7 +66,51 @@ class ApiWithIni:
     @property
     def devices(self):
         """Get the Devices Controller for managing all device resources."""
-        return self._devices
+        # return self._devices
+        place_holder_loads = [
+            {
+                "id": 10,
+                "unused": False,
+                "name": "B%C3%BCro%20(Steckdose)",
+                "room": "Home",  # room is actualy an ID and name needs to retrieved from rooms object
+                "type": "onoff",
+                "device": "00019eb8",
+                "channel": 0,
+                "sub_type": "",
+                # load enrichement
+                "manufacterer": "Feller AG",
+                "sw_ver": "A: 2.0.6-0, C: 1.8.3-0",
+                "hw_id": "0x1113",
+                "is_ugw": False,
+            },
+            {
+                "id": 8,
+                "unused": False,
+                "name": "Esstisch",
+                "room": "Home",
+                "type": "onoff",
+                "device": "00019ea5",
+                "channel": 0,
+                "sub_type": "",
+                # load enrichement
+                "manufacterer": "Feller AG",
+                "sw_ver": "A: 2.0.6-0, C: 1.8.3-0",
+                "hw_id": "0x1113",
+                "is_ugw": True,
+            },
+        ]
+        return place_holder_loads
+
+    @property
+    def bridge_id(self) -> str | None:
+        """Return the ID of the bridge we're currently connected to."""
+        # TODO: get real ID from uGW
+        return "made_up_ID_for_ugw"
+
+    @property
+    def config(self):  # -> ConfigController:
+        """Get the Config Controller with config-like resources."""
+        return self._config
 
     # **end** copy of hue PyPI stuff
     # ------------------------------------------------------------
