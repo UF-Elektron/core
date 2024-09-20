@@ -3,7 +3,9 @@
 from homeassistant.components.light import ATTR_BRIGHTNESS, ColorMode, LightEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity import Entity
 from homeassistant.util.color import value_to_brightness
 
 # testing: to create LisaLight in async_add_entities (TODO: remove)
@@ -67,9 +69,19 @@ async def async_setup_entry(
     # async_add_entities(make_light_entity(light) for light in controller)
 
 
-# add coordinator later
-# class LisaLight(CoordinatorEntity, LightEntity):
-class LisaLight(LightEntity):
+class BaseEntity(Entity):
+    def __init__(self, id, name):
+        # Entity class attributes
+        # _attr_unique_id and / or _attr_device_info is needed so that the entity is connected with the device
+        self._attr_unique_id = (
+            f"lisa_load_{id}_{name}"  # TODO: change to src_addr + channel
+        )
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, id)},
+        )
+
+
+class LisaLight(BaseEntity, LightEntity):
     """Representation of Lisa light."""
 
     # without coordinator for now
@@ -77,10 +89,10 @@ class LisaLight(LightEntity):
     def __init__(self, light):
         """Initialize the light."""
         print("create a LisaLight")
-        # super().__init__(coordinator)
         self.light = light
-        # self.api_object = ApiWithIni()
-        # self.light = Light(10, {"name": "light 1"}, self.api_object.req_data)
+        super().__init__(self.light.id, self.light.name)
+
+        # LightEntity class attributes
         self._attr_supported_color_modes = {ColorMode.ONOFF}
 
     @property

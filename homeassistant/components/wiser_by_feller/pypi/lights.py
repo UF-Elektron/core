@@ -52,6 +52,11 @@ class Light:
         self._tmp_state_testing = False
 
     @property
+    def id(self):
+        print(f"return id {self._id}")
+        return self._id
+
+    @property
     def name(self):
         return self.raw["name"]
 
