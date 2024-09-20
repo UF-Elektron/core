@@ -53,14 +53,17 @@ async def async_setup_entry(
     api_object = ApiWithIni()
 
     # """Set up Example sensor based on a config entry."""
-    # # from https://developers.home-assistant.io/docs/core/entity
-    # # device: ExampleDevice = hass.data[DOMAIN][entry.entry_id]
+    # from https://developers.home-assistant.io/docs/core/entity
     # device: ExampleDevice = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         LisaLight(
             Light(
                 lisa_light.get("id"),
-                {"name": lisa_light.get("name")},
+                {
+                    "name": lisa_light.get("name", "missing name"),
+                    "device": lisa_light.get("device", "missing device address"),
+                    "channel": lisa_light.get("channel", "missing load channel"),
+                },
                 api_object.req_data,
             )
         )
@@ -70,12 +73,10 @@ async def async_setup_entry(
 
 
 class BaseEntity(Entity):
-    def __init__(self, id, name):
+    def __init__(self, id, unique_name):
         # Entity class attributes
         # _attr_unique_id and / or _attr_device_info is needed so that the entity is connected with the device
-        self._attr_unique_id = (
-            f"lisa_load_{id}_{name}"  # TODO: change to src_addr + channel
-        )
+        self._attr_unique_id = unique_name
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, id)},
         )
@@ -90,7 +91,7 @@ class LisaLight(BaseEntity, LightEntity):
         """Initialize the light."""
         print("create a LisaLight")
         self.light = light
-        super().__init__(self.light.id, self.light.name)
+        super().__init__(self.light.id, self.light.unique_name)
 
         # LightEntity class attributes
         self._attr_supported_color_modes = {ColorMode.ONOFF}
