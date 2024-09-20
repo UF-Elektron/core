@@ -123,7 +123,7 @@ class LisaLight(LightEntity):
         # if self.is_group:
         #     return self.light.state["any_on"]
         print(f"is_on: {self.light.state}")
-        return False
+        return self.light.state
 
     def turn_on(self, **kwargs):
         """Turn device on."""
