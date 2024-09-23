@@ -19,6 +19,7 @@ PLATFORMS: list[Platform] = [Platform.LIGHT]
 # type New_NameConfigEntry = ConfigEntry[MyApi]  # noqa: F821
 
 
+# FIXME: problem uGW taucht erst beim zweiten Mal auf. Wieso?
 # Place holder stuff for missing Pypi
 class Stub:
     mac_address = "02:08:43:20:26:a0"
