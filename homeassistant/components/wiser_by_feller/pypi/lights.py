@@ -31,6 +31,10 @@ class Light:
         return self.raw["name"]
 
     @property
+    def type(self):
+        return self.raw["type"]
+
+    @property
     def state(self):
         print("call property state of Light")
         return self._tmp_state_testing

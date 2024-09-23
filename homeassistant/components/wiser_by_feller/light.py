@@ -1,6 +1,12 @@
 # PyPI imports
 
-from homeassistant.components.light import ATTR_BRIGHTNESS, ColorMode, LightEntity
+from homeassistant.components.light import (
+    ATTR_BRIGHTNESS,
+    ColorMode,
+    LightEntity,
+    LightEntityFeature,
+    filter_supported_color_modes,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -63,6 +69,7 @@ async def async_setup_entry(
                     "name": lisa_light.get("name", "missing name"),
                     "device": lisa_light.get("device", "missing device address"),
                     "channel": lisa_light.get("channel", "missing load channel"),
+                    "type": lisa_light.get("type", "missing load type"),
                 },
                 api_object.req_data,
             )
@@ -94,7 +101,17 @@ class LisaLight(BaseEntity, LightEntity):
         super().__init__(self.light.id, self.light.unique_name)
 
         # LightEntity class attributes
-        self._attr_supported_color_modes = {ColorMode.ONOFF}
+
+        set_supported_color_modes = {ColorMode.ONOFF}
+        if self.light.type in ["dim", "dali"]:
+            print("create dimmable load")
+            set_supported_color_modes.add(ColorMode.BRIGHTNESS)
+            self._attr_supported_features |= LightEntityFeature.TRANSITION
+        # TODO: implement _attr_color_mode
+
+        self._attr_supported_color_modes = filter_supported_color_modes(
+            set_supported_color_modes
+        )
 
     @property
     def available(self):

@@ -96,7 +96,22 @@ class ApiWithIni:
                 "manufacterer": "Feller AG",
                 "sw_ver": "A: 2.0.6-0, C: 1.8.3-0",
                 "hw_id": "0x1113",
-                "is_ugw": True,
+                "is_ugw": True,  # TODO: currently this does not work and joins all is_ugw True entities together and not to uGW device
+            },
+            {
+                "id": 12,
+                "unused": False,
+                "name": "Fake Dimmer",
+                "room": "Home",
+                "type": "dim",
+                "device": "00012345",
+                "channel": 0,
+                "sub_type": "",
+                # load enrichement
+                "manufacterer": "Feller AG",
+                "sw_ver": "A: 2.0.6-0, C: 1.8.3-0",
+                "hw_id": "0x1213",
+                "is_ugw": False,
             },
         ]
         return place_holder_loads
