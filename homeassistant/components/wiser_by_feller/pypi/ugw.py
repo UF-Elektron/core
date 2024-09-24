@@ -9,6 +9,7 @@ import requests
 
 # Import local modules
 from . import utils
+from . import loads
 
 # Version of this tool, printed with option "--version"
 __version__ = "20240418.0"
@@ -20,6 +21,7 @@ UGW_FWID_V2 = 0x8694
 
 # Get HTTPS-Adapters
 HTTPS_ADAPTERS = utils.get_https_adapters()
+DEBUGGING = True
 
 
 # from TestCaseRestApiWithIni
@@ -41,12 +43,20 @@ class ApiWithIni:
     request_retries = 3
     use_request_session = True
     api_entry_point_folder = "api"
+    load_json = None
 
     # Add here expected data key-attributes and (python-data)-types e.g. {'id': str}
     required_attr_types = None
 
     def __init__(self):
         print("setup class")
+
+        if DEBUGGING:
+            print("debugging active: get devices from files")
+            bot_name = self.argv.get("botname", "home")
+            self.load_json = loads.loads[bot_name]
+            print(f"{bot_name=} selected loads: {self.load_json}")
+            self.enrich_loads()
 
         # Read about 'request-session'
         # http://2.python-requests.org/en/latest/user/advanced/#session-objects
@@ -62,59 +72,24 @@ class ApiWithIni:
     # ...copy of hue PyPI stuff
     # ------------------------------------------------------------
 
+    def enrich_loads(self):
+        for load in self.load_json:
+            load.update(
+                {
+                    # load enrichement
+                    "manufacterer": "Feller AG",
+                    "sw_ver": "A: 2.0.6-0, C: 1.8.3-0",
+                    "hw_id": "0x1113",
+                    # "is_ugw": True,  # TODO: currently this does not work and joins all is_ugw True entities together and not to uGW device
+                }
+            )
+
     # TODO: add return type  -> DevicesController:
     @property
     def devices(self):
         """Get the Devices Controller for managing all device resources."""
         # return self._devices
-        place_holder_loads = [
-            {
-                "id": 10,
-                "unused": False,
-                "name": "B%C3%BCro%20(Steckdose)",
-                "room": "Home",  # room is actualy an ID and name needs to retrieved from rooms object
-                "type": "onoff",
-                "device": "00019eb8",
-                "channel": 0,
-                "sub_type": "",
-                # load enrichement
-                "manufacterer": "Feller AG",
-                "sw_ver": "A: 2.0.6-0, C: 1.8.3-0",
-                "hw_id": "0x1113",
-                "is_ugw": False,
-            },
-            {
-                "id": 8,
-                "unused": False,
-                "name": "Esstisch",
-                "room": "Home",
-                "type": "onoff",
-                "device": "00019ea5",
-                "channel": 0,
-                "sub_type": "",
-                # load enrichement
-                "manufacterer": "Feller AG",
-                "sw_ver": "A: 2.0.6-0, C: 1.8.3-0",
-                "hw_id": "0x1113",
-                "is_ugw": True,  # TODO: currently this does not work and joins all is_ugw True entities together and not to uGW device
-            },
-            {
-                "id": 12,
-                "unused": False,
-                "name": "Fake Dimmer",
-                "room": "Home",
-                "type": "dim",
-                "device": "00012345",
-                "channel": 0,
-                "sub_type": "",
-                # load enrichement
-                "manufacterer": "Feller AG",
-                "sw_ver": "A: 2.0.6-0, C: 1.8.3-0",
-                "hw_id": "0x1213",
-                "is_ugw": False,
-            },
-        ]
-        return place_holder_loads
+        return self.load_json
 
     @property
     def bridge_id(self) -> str | None:

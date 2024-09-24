@@ -1,20 +1,11 @@
 #! /usr/bin/env python3
-# -----------------------------------------------------------------------------
-#  @file  ./tests/api/utils.py
-#
-#  @brief  Helper functions for unit tests
-#
-#  @author  PES  antonio.pedrosa@anyweb.ch
-#
-#  @copyright  Copyright (C) 2019, Feller AG
-# ------------------------------------------------------------------------------
-#
 
 """Various utility functions."""
 
 # Python module imports
 import ssl
 from configparser import ConfigParser
+
 
 # Special requests module for HTTPS-Adapter
 from requests.adapters import HTTPAdapter

@@ -87,7 +87,7 @@ async def async_setup_devices(bridge):
         }
         # DME: is it a normal device or the uGateway? copy from hue devices.py
         # if hue_resource.metadata.archetype == DeviceArchetypes.BRIDGE_V2:
-        if lisa_load.get("is_ugw"):
+        if lisa_load.get("is_ugw", False):
             print("attribute identified as ugw")
             params[ATTR_IDENTIFIERS].add((DOMAIN, api.bridge_id))
         else:
