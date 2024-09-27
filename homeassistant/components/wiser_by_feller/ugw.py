@@ -11,7 +11,7 @@ from .pypi.ugw import ApiWithIni
 
 # TODO: soll ich PLATFORMS hier wie bei hue machen, oder wie von HA vorgeschlagen in __init__.py?
 # jetzt 2 mal...
-PLATFORMS: list[Platform] = [Platform.LIGHT]
+PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.COVER]
 
 
 # DME: stolen from hue/bridge.py
