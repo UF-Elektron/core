@@ -70,11 +70,13 @@ async def async_setup_entry(
                     "device": lisa_light.get("device", "missing device address"),
                     "channel": lisa_light.get("channel", "missing load channel"),
                     "type": lisa_light.get("type", "missing load type"),
+                    "sub_type": lisa_light.get("sub_type", "missing sub type"),
                 },
                 api_object.req_data,
             )
         )
         for lisa_light in devices
+        if lisa_light.get("type") in ["onoff", "dim", "dali"]
     )
     # async_add_entities(make_light_entity(light) for light in controller)
 
@@ -103,11 +105,19 @@ class LisaLight(BaseEntity, LightEntity):
         # LightEntity class attributes
 
         set_supported_color_modes = {ColorMode.ONOFF}
+        self._attr_color_mode = ColorMode.ONOFF
         if self.light.type in ["dim", "dali"]:
             print("create dimmable load")
             set_supported_color_modes.add(ColorMode.BRIGHTNESS)
             self._attr_supported_features |= LightEntityFeature.TRANSITION
-        # TODO: implement _attr_color_mode
+            self._attr_color_mode = ColorMode.BRIGHTNESS
+
+        if self.light.sub_type in ["rgb"]:
+            set_supported_color_modes.add(ColorMode.RGBW)
+            self._attr_color_mode = ColorMode.ONOFF
+        elif self.light.sub_type in ["tw"]:
+            set_supported_color_modes.add(ColorMode.WHITE)
+            self._attr_color_mode = ColorMode.ONOFF
 
         self._attr_supported_color_modes = filter_supported_color_modes(
             set_supported_color_modes
