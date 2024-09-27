@@ -12,7 +12,7 @@ from .ugw import LisaGateway
 
 # TODO List the platforms that you want to support.
 # For your initial PR, limit it to 1 platform.
-PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.COVER]
+PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.COVER, Platform.VALVE]
 
 # TODO Create ConfigEntry type alias with API object
 # TODO Rename type alias and update all entry annotations
