@@ -1,8 +1,5 @@
 """Handles lisa devices / loads and mapping to Home Assistant devices."""
 
-from dataclasses import dataclass
-from enum import Enum
-
 # code from hue/v2/device.py
 # maybe better name load / loads? name device.py
 from homeassistant.const import (
@@ -28,58 +25,19 @@ from .pypi.ugw import ApiWithIni
 # from . import ugw
 
 
-class DeviceArchetypes(Enum):
-    """Enum with all possible Device archetypes."""
-
-    BRIDGE_V2 = "bridge_v2"
-    UNKNOWN_ARCHETYPE = "unknown_archetype"
-
-
-@dataclass
-class DeviceProductData:
-    """Represent a DeviceProductData object as used by the Hue api."""
-
-    model_id: str
-    software_version: str
-    manufacturer_name: str
-    product_name: str
-
-
-@dataclass
-class DeviceMetaData:
-    """Represent MetaData for a device object as used by the Hue api."""
-
-    # archetype: DeviceArchetypes
-    name: str
-
-
-@dataclass
-class Device:
-    """Blaaaablabla."""
-
-    id: str
-    product_data: DeviceProductData
-    metadata: DeviceMetaData
-
-
-# TODO: wie mappen wir am besten die source addresse, den load channel mit der load-id?
 async def async_setup_devices(bridge):
     """Manage setup of devices from Hue devices."""
     entry = bridge.config_entry
     hass = bridge.hass
     api: ApiWithIni = bridge.api  # to satisfy typing
     dev_reg = dr.async_get(hass)
-    # use test value
-    # I could change this to specificaly only mean loads and add a separate one for ugw
-    # like this: ugw_data = api.ugw and then call add_device once from dev_controller and once from ugw_data
     dev_controller = api.devices
-    ugw_controller = api.ugw
+    ugw_controller = api.ugw  # used to add via_device ugw_id
 
     # TODO: add type for "hue_resource", it used to be Device | Room | Zone
     @callback
     def add_device(lisa_load) -> dr.DeviceEntry:
         """Register a Hue device in device registry."""
-        # Register a Hue device resource as device in HA device registry.
         model = f"{lisa_load.get("type")} ({lisa_load.get("hw_id")})"
         params = {
             ATTR_IDENTIFIERS: {(DOMAIN, lisa_load.get("id"))},
@@ -88,24 +46,11 @@ async def async_setup_devices(bridge):
             ATTR_MODEL: model,
             ATTR_MANUFACTURER: lisa_load.get("manufacterer"),
         }
-        # DME: is it a normal device or the uGateway? copy from hue devices.py
-        # if hue_resource.metadata.archetype == DeviceArchetypes.BRIDGE_V2:
-        if lisa_load.get("api_version"):
-            # TODO: or delete this here and move to __init__?
-            # when the load has an api_version it is a gateway
-            print("attribute identified as ugw")
-            params[ATTR_IDENTIFIERS].add(
-                (DOMAIN, ugw_controller.get("mac_address", "missing MAC!!!"))
-            )
-        else:
-            print("attribute identified as device")
-            # params[ATTR_VIA_DEVICE] = (DOMAIN, api.config.bridge_device.id)
-            params[ATTR_VIA_DEVICE] = (
-                DOMAIN,
-                ugw_controller.get("mac_address", "missing MAC!!!"),
-            )  # id of uGW
+
+        params[ATTR_VIA_DEVICE] = (
+            DOMAIN,
+            ugw_controller.get("ugw_id", "missing ugw_id"),
+        )
         return dev_reg.async_get_or_create(config_entry_id=entry.entry_id, **params)
 
     known_devices = [add_device(lisa_load) for lisa_load in dev_controller]
-    # TODO: remove ugw again from add device
-    # add_device(ugw_controller)
