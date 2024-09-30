@@ -24,6 +24,27 @@ HTTPS_ADAPTERS = utils.get_https_adapters()
 DEBUGGING = True
 
 
+class Lisa_uGW:
+    def __init__(self, unique_id, api_version, fw_version, mac_address, hostname):
+        self.unique_id = unique_id
+        self.api_version = api_version
+        self.fw_version = fw_version
+        self.mac_address = mac_address
+        self.host_name = hostname
+
+    def ugw_data(self) -> dict:
+        return {
+            "ugw_id": self.unique_id,
+            "api_version": self.api_version,
+            "sw_ver": self.fw_version,
+            "manufacturer": "Feller AG",
+            "name": self.host_name,
+            "mac_address": self.mac_address,
+            "type": "µGateway v2.0",
+            "hw_id": "LISA_H753ZI",
+        }
+
+
 # from TestCaseRestApiWithIni
 class ApiWithIni:
     """Default TestCase for API-UnitTests using module 'requests' (see 'http://2.python-requests.org/en/latest').
@@ -44,12 +65,19 @@ class ApiWithIni:
     use_request_session = True
     api_entry_point_folder = "api"
     load_json = None
+    my_ugw = None
 
     # Add here expected data key-attributes and (python-data)-types e.g. {'id': str}
     required_attr_types = None
 
     def __init__(self):
         print("setup class")
+
+        # get uGW data
+        # hack: this will be added to xxxxxxxx
+        self.my_ugw = Lisa_uGW(
+            "0x1E4C7", "55.44.33", "6.0.20", "02:08:43:20:26:a0", "wiser-00235635"
+        )
 
         if DEBUGGING:
             print("debugging active: get devices from files")
@@ -90,6 +118,11 @@ class ApiWithIni:
         """Get the Devices Controller for managing all device resources."""
         # return self._devices
         return self.load_json
+
+    @property
+    def ugw(self):
+        """Get the Devices Controller for managing all device resources."""
+        return self.my_ugw.ugw_data()
 
     @property
     def bridge_id(self) -> str | None:

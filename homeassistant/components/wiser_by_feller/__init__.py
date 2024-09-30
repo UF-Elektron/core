@@ -17,22 +17,7 @@ PLATFORMS: list[Platform] = [Platform.LIGHT, Platform.COVER, Platform.VALVE]
 # TODO Create ConfigEntry type alias with API object
 # TODO Rename type alias and update all entry annotations
 # type New_NameConfigEntry = ConfigEntry[MyApi]  # noqa: F821
-
-
-# FIXME: problem uGW taucht erst beim zweiten Mal auf. Wieso?
-# Place holder stuff for missing Pypi
-class Stub:
-    mac_address = "02:08:43:20:26:a0"
-    bridge_id = "uGW ID"
-    # bridge_device.id = 0
-    # bridge_device.product_data.manufacturer_name = 0
-    name = "name of uGW"
-    model_id = "model ID"
-    software_version = "6.0.16"
-
-
-class Pypi_placeholder:
-    config = Stub
+from .pypi.ugw import ApiWithIni
 
 
 # TODO Update entry annotation
@@ -50,7 +35,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     bridge = LisaGateway(hass, entry)
     # TODO: replace place holder
     # api = bridge.api
-    api = Pypi_placeholder
+    api: ApiWithIni = bridge.api
+    ugw_controller = api.ugw
     if not await bridge.async_initialize_bridge():
         return False
 
@@ -58,17 +44,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     device_registry = dr.async_get(hass)
     device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        connections={(dr.CONNECTION_NETWORK_MAC, api.config.mac_address)},
-        identifiers={
-            (DOMAIN, api.config.bridge_id),
-            (DOMAIN, "api.config.bridge_device.id"),
+        connections={
+            (
+                dr.CONNECTION_NETWORK_MAC,
+                ugw_controller.get("mac_address", "missing MAC!!!"),
+            )
         },
-        manufacturer="api.config.bridge_device.product_data.manufacturer_name",
-        name=api.config.name,
-        model=api.config.model_id,
-        sw_version=api.config.software_version,
+        identifiers={(DOMAIN, ugw_controller.get("ugw_id", "missing ugw_id"))},
+        manufacturer=ugw_controller.get("manufacturer", "missing manufucturer"),
+        name=ugw_controller.get("name", "missing name"),
+        model=ugw_controller.get("type", "missing type"),
+        sw_version=ugw_controller.get("sw_ver", "missing sw_ver"),
     )
-
     return True
 
 

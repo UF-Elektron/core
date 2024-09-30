@@ -70,7 +70,10 @@ async def async_setup_devices(bridge):
     api: ApiWithIni = bridge.api  # to satisfy typing
     dev_reg = dr.async_get(hass)
     # use test value
+    # I could change this to specificaly only mean loads and add a separate one for ugw
+    # like this: ugw_data = api.ugw and then call add_device once from dev_controller and once from ugw_data
     dev_controller = api.devices
+    ugw_controller = api.ugw
 
     # TODO: add type for "hue_resource", it used to be Device | Room | Zone
     @callback
@@ -87,13 +90,22 @@ async def async_setup_devices(bridge):
         }
         # DME: is it a normal device or the uGateway? copy from hue devices.py
         # if hue_resource.metadata.archetype == DeviceArchetypes.BRIDGE_V2:
-        if lisa_load.get("is_ugw", False):
+        if lisa_load.get("api_version"):
+            # TODO: or delete this here and move to __init__?
+            # when the load has an api_version it is a gateway
             print("attribute identified as ugw")
-            params[ATTR_IDENTIFIERS].add((DOMAIN, api.bridge_id))
+            params[ATTR_IDENTIFIERS].add(
+                (DOMAIN, ugw_controller.get("mac_address", "missing MAC!!!"))
+            )
         else:
             print("attribute identified as device")
             # params[ATTR_VIA_DEVICE] = (DOMAIN, api.config.bridge_device.id)
-            params[ATTR_VIA_DEVICE] = (DOMAIN, "3434343434343")  # id of uGW
+            params[ATTR_VIA_DEVICE] = (
+                DOMAIN,
+                ugw_controller.get("mac_address", "missing MAC!!!"),
+            )  # id of uGW
         return dev_reg.async_get_or_create(config_entry_id=entry.entry_id, **params)
 
     known_devices = [add_device(lisa_load) for lisa_load in dev_controller]
+    # TODO: remove ugw again from add device
+    # add_device(ugw_controller)
