@@ -71,8 +71,6 @@ class ApiWithIni:
     required_attr_types = None
 
     def __init__(self):
-        print("setup class")
-
         # get uGW data
         # hack: this will be added to xxxxxxxx
         self.my_ugw = Lisa_uGW(
@@ -80,7 +78,6 @@ class ApiWithIni:
         )
 
         if DEBUGGING:
-            print("debugging active: get devices from files")
             bot_name = self.argv.get("botname", "home")
             self.load_json = loads.loads[bot_name]
             print(f"{bot_name=} selected loads: {self.load_json}")
@@ -231,7 +228,6 @@ class ApiWithIni:
 
     def tmp_set_target_state(self, id, data=None):
         jsend_data = self.req_data("put", f"/loads/{id}/target_state", json=data)
-        print(jsend_data)
 
     def req_data(self, method, subpath, **kwargs):
         jsend = self.req_jsend(method, subpath, **kwargs)

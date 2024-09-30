@@ -8,7 +8,6 @@ class Light:
 
     def __init__(self, id: str, raw, request: Coroutine) -> None:
         """Initialize instance."""
-        print(f"init 'Light' with '{id=}', '{raw=}'")
         self._id = id
         self.raw = raw
         self._unique_name = f"{raw['device']}_{raw['channel']}"
@@ -23,7 +22,6 @@ class Light:
 
     @property
     def id(self):
-        print(f"return id {self._id}")
         return self._id
 
     @property
@@ -40,7 +38,6 @@ class Light:
 
     @property
     def state(self):
-        print("call property state of Light")
         return self._tmp_state_testing
 
     def set_state(self, data):

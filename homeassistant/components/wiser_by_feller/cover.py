@@ -73,7 +73,6 @@ class LisaCover(BaseEntity, CoverEntity):
     # __init__(self, coordinator, cover):
     def __init__(self, cover):
         """Initialize the cover."""
-        print("create a LisaCover")
         self.cover = cover
         super().__init__(self.cover.id, self.cover.unique_name)
 

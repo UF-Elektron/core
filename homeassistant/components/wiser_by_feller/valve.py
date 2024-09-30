@@ -89,11 +89,11 @@ class LisaValve(BaseEntity, ValveEntity):
 
     async def async_open_valve(self, **kwargs) -> None:
         """Open valve."""
-        print("TODO: implement open valve")
+        # TODO: implement implement open valve
 
     async def async_close_valve(self, **kwargs) -> None:
         """Close valve."""
-        print("TODO: implement close valve")
+        # TODO: implement implement close valve
 
     # @callback
     # def _update_callback(self) -> None:

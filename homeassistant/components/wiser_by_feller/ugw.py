@@ -51,12 +51,8 @@ class LisaGateway:
             setup_ok = True
             self.logger.info("class_init ok")
         except:
-            print("async_initialize_bridge EXCPETION!")
-            self.logger.exception("async_initialize_bridge class_init excpetion")
+            self.logger.exception("async_initialize_bridge class_init exception")
             return False
-        # return False if uGW initialization failed
-        # before return False throw an exception like this: self.logger.exception("Unknown error connecting to Hue bridge")
-        # TODO: setup devices
         await async_setup_devices(self)
 
         # forward my config entry to home assistant

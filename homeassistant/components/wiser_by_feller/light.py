@@ -98,7 +98,6 @@ class LisaLight(BaseEntity, LightEntity):
     # __init__(self, coordinator, light):
     def __init__(self, light):
         """Initialize the light."""
-        print("create a LisaLight")
         self.light = light
         super().__init__(self.light.id, self.light.unique_name)
 
@@ -107,7 +106,6 @@ class LisaLight(BaseEntity, LightEntity):
         set_supported_color_modes = {ColorMode.ONOFF}
         self._attr_color_mode = ColorMode.ONOFF
         if self.light.type in ["dim", "dali"]:
-            print("create dimmable load")
             set_supported_color_modes.add(ColorMode.BRIGHTNESS)
             self._attr_supported_features |= LightEntityFeature.TRANSITION
             self._attr_color_mode = ColorMode.BRIGHTNESS
@@ -126,7 +124,7 @@ class LisaLight(BaseEntity, LightEntity):
     @property
     def available(self):
         """Return if light is available."""
-        print("'available' not implemented")
+        # TODO: implement available
         return True
 
     # Properties should always only return information from memory and not do I/O (like network requests).
@@ -159,10 +157,10 @@ class LisaLight(BaseEntity, LightEntity):
     @property
     def is_on(self) -> bool:
         """Return true if device is on."""
+        # TODO: implement is_on
         # TODO: add when scenes / groups are implemented
         # if self.is_group:
         #     return self.light.state["any_on"]
-        print(f"is_on: {self.light.state}")
         return self.light.state
 
     def turn_on(self, **kwargs):
