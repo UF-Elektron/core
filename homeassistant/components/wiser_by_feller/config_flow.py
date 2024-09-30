@@ -89,13 +89,13 @@ class WbfConfigFlow(ConfigFlow, domain=DOMAIN):
 
     def __init__(self) -> None:
         """Initialize the Hue flow."""
-        print("WbfConfigFlow __init__: nothing to do here")
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Handle the initial step."""
-        print(f"async_step_user: {user_input=}")
+        # TODO: this is apparently called twice. Why?
+        _LOGGER.info(f"async_step_user: {user_input=}")
         errors: dict[str, str] = {}
         if user_input is not None:
             try:
@@ -144,7 +144,7 @@ class HueV2OptionsFlowHandler(OptionsFlow):
 
     def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialize Hue options flow."""
-        print("HueV2OptionsFlowHandler...")
+        # TODO: what to do here?
         self.config_entry = config_entry
 
     async def async_step_init(
