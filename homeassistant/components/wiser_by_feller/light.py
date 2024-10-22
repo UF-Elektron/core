@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.entity import Entity
-from homeassistant.util.color import value_to_brightness
+from homeassistant.util.color import brightness_to_value, value_to_brightness
 
 # testing: to create LisaLight in async_add_entities (TODO: remove)
 from .pypi.lights import Light
@@ -165,9 +165,9 @@ class LisaLight(BaseEntity, LightEntity):
 
     def turn_on(self, **kwargs):
         """Turn device on."""
-        value_in_range = kwargs.get(ATTR_BRIGHTNESS, 10000)
-        data = {"bri": value_in_range}
-        self.light.set_state(data)
+        ha_bri = kwargs.get(ATTR_BRIGHTNESS, 255)
+        lisa_bri = int(brightness_to_value((1, 10000), ha_bri))
+        self.light.set_state({"bri": lisa_bri})
 
     def turn_off(self, **kwargs):
         """Turn device off."""
