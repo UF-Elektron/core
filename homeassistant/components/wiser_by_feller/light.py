@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.entity import Entity
-from homeassistant.util.color import brightness_to_value, value_to_brightness
+from homeassistant.util.color import brightness_to_value
 
 # testing: to create LisaLight in async_add_entities (TODO: remove)
 from .pypi.lights import Light
@@ -112,10 +112,10 @@ class LisaLight(BaseEntity, LightEntity):
 
         if self.light.sub_type in ["rgb"]:
             set_supported_color_modes.add(ColorMode.RGBW)
-            self._attr_color_mode = ColorMode.ONOFF
+            self._attr_color_mode = ColorMode.RGBW
         elif self.light.sub_type in ["tw"]:
             set_supported_color_modes.add(ColorMode.WHITE)
-            self._attr_color_mode = ColorMode.ONOFF
+            self._attr_color_mode = ColorMode.WHITE
 
         self._attr_supported_color_modes = filter_supported_color_modes(
             set_supported_color_modes
@@ -134,16 +134,6 @@ class LisaLight(BaseEntity, LightEntity):
     def name(self):
         """Return the name of the Hue light."""
         return self.light.name
-
-    @property
-    def brightness(self):
-        """Return the current brightness."""
-        return value_to_brightness(BRIGHTNESS_SCALE, self._device.brightness)
-
-    @property
-    def color_mode(self) -> str:
-        """Return the color mode of the light."""
-        return ColorMode.ONOFF
 
     @property
     def hs_color(self):
@@ -166,7 +156,7 @@ class LisaLight(BaseEntity, LightEntity):
     def turn_on(self, **kwargs):
         """Turn device on."""
         ha_bri = kwargs.get(ATTR_BRIGHTNESS, 255)
-        lisa_bri = int(brightness_to_value((1, 10000), ha_bri))
+        lisa_bri = int(brightness_to_value(BRIGHTNESS_SCALE, ha_bri))
         self.light.set_state({"bri": lisa_bri})
 
     def turn_off(self, **kwargs):
